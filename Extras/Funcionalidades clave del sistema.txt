@@ -49,3 +49,20 @@ Carga de Nueva Venta
         Se actualiza la base de datos de clientes.
 
 
+Cambios: 
+
+  
+
+    En ventas, agregar los graficos y otra pestaña con el listado de de ventas, 
+    En el listado se ventas tiene q estar el boton de nueva venta
+
+Nueva Funcionalidades:
+
+    Dashboard inicial, en vez de graficos, mostrar un listado de notificaciones
+    Msj de advertencia, notas, pendientes, etc
+
+    Listado de envios se puede exprotar como pdf o como msj de WhatsApp al chofer asignado 
+    (ver si se puede ordner por geolocalización segun l dirección del establecimiento)
+
+    Agregar listado se proveedores con boton directo para enviar mail o WhatsApp
+ 

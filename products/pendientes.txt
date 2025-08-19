@@ -1,0 +1,26 @@
+
+Errores: 
+
+Formulario de productos
+Cuando creamos un producto se agrega a la lista de papelera y no a la de disponibles
+Creamos un producto no se muestran las sub Categorias
+La barra de busqueda coloca "none" apenas entramos
+
+Listad de productos: 
+
+el boton de eliminar no hace nada
+
+
+Categorias
+
+El boton de eliminar no funciona
+El boton de editar funciona pero el formulario de editar no muestra las sub categorias asosciadas para poder elimarlas
+
+El boton de filtrar no aplica los filtros
+
+
+
+
+
+
+

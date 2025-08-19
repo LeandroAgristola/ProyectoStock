@@ -1,6 +1,7 @@
-{% extends "management/layout_management.html" %}
+{% extends "products/products_layout.html" %}
+{% load static %}
 
-{% block content %}
+{% block product_content %}
 <div class="container my-4" id="formsCategorias">
   <h2 class="mb-4">{{ title }}</h2>
 
@@ -18,19 +19,18 @@
         {{ form.name.label_tag }}
         {{ form.name }}
         {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+        <small class="form-text text-muted">Ingresa el nombre de la categoría principal.</small>
     </div>
 
-    <div class="mb-3">
-        {{ form.parent.label_tag }}
-        {{ form.parent }}
-        {% if form.parent.errors %}<div class="text-danger small">{{ form.parent.errors }}</div>{% endif %}
-        <small class="form-text text-muted">Deja en blanco si es una categoría principal.</small>
-    </div>
-
-    <div class="mb-3">
-        {{ form.description.label_tag }}
-        {{ form.description }}
-        {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+    <div id="subcategories-section" style="display: none;">
+      <h5 class="mt-4">Subcategorías</h5>
+      <p class="form-text text-muted">Agrega subcategorías (opcional).</p>
+      <div id="subcategories-container">
+        <!-- Los campos de subcategoría se agregarán aquí dinámicamente -->
+      </div>
+      <button type="button" id="addSubcategoryBtn" class="btn btn-outline-primary btn-sm mt-2">
+        <i class="fa-solid fa-plus"></i> Agregar Subcategoría
+      </button>
     </div>
 
     <div class="d-flex justify-content-between mt-4">
@@ -39,4 +39,52 @@
     </div>
   </form>
 </div>
-{% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const categoryNameInput = document.getElementById('id_name');
+  const subcategoriesSection = document.getElementById('subcategories-section');
+  const subcategoriesContainer = document.getElementById('subcategories-container');
+  const addSubcategoryBtn = document.getElementById('addSubcategoryBtn');
+
+  // Función para agregar un nuevo campo de subcategoría
+  function addSubcategoryField() {
+    const newSubcategoryField = document.createElement('div');
+    newSubcategoryField.className = 'input-group mb-2';
+    newSubcategoryField.innerHTML = `
+      <input type="text" name="subcategories" class="form-control" placeholder="Nombre de la subcategoría">
+      <button type="button" class="btn btn-outline-danger remove-subcategory-btn">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+    `;
+    subcategoriesContainer.appendChild(newSubcategoryField);
+  }
+
+  // Evento para el botón de agregar subcategoría
+  addSubcategoryBtn.addEventListener('click', function() {
+    addSubcategoryField();
+  });
+
+  // Evento para remover campos de subcategoría
+  subcategoriesContainer.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-subcategory-btn')) {
+      event.target.closest('.input-group').remove();
+    }
+  });
+
+  // Mostrar la sección de subcategorías si ya hay un nombre
+  if (categoryNameInput.value.length > 0) {
+    subcategoriesSection.style.display = 'block';
+  }
+
+  // Escuchar el evento de input en el campo de categoría
+  categoryNameInput.addEventListener('input', function() {
+    if (this.value.length > 0) {
+      subcategoriesSection.style.display = 'block';
+    } else {
+      subcategoriesSection.style.display = 'none';
+    }
+  });
+});
+</script>
+{% endblock product_content %}

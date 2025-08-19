@@ -1,219 +1,119 @@
-{% extends "management/layout_management.html" %}
+{% extends "products/products_layout.html" %}
 {% load static %}
 
-{% block content %}
-<div class="container-fluid" id="product_list">
-    <h2 class="mb-4">Lista de Productos</h2>
-    
-    <!-- Botones de acción -->
-    <a href="{% url 'products:product_create' %}" class="btn btn-success mb-3">
-        <i class="fa-solid fa-plus"></i> Nuevo Producto
-    </a>
-    <a href="{% url 'products:category_list' %}" class="btn btn-info mb-3 ms-2">
-        <i class="fa-solid fa-folder-open"></i> Gestión de Categorías
-    </a>
-
+{% block product_content %}
     <!-- Formulario de búsqueda y filtro -->
-    <form method="get" class="mb-4">
-        <div class="row g-2 align-items-end">
-            <!-- Campo de búsqueda -->
-            <div class="col-md-6 position-relative">
-                <div class="input-group">
-                    <input type="text" name="search" id="search" value="{{ filters.search }}" class="form-control" placeholder="Buscar producto...">
-                    <button class="btn btn-secondary" type="submit">
-                        <i class="fa-solid fa-search"></i>
-                    </button>
-                    <button class="btn btn-primary" type="button" id="btnFilterToggle" title="Mostrar/Ocultar filtros">
-                        <i class="fa-solid fa-filter"></i>
-                    </button>
-                </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="get" class="d-flex w-50">
+            <div class="input-group">
+                <input type="text" name="search" id="search" value="{{ filters.search }}" class="form-control" placeholder="Buscar producto...">
+                <button class="btn btn-secondary" type="submit">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+                <button class="btn btn-primary" type="button" id="btnFilterToggle" title="Mostrar/Ocultar filtros">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
             </div>
+        </form>
+    </div>
 
-            <!-- Filtros (colapsables) -->
-            <div id="advancedFilters" class="row g-3 mt-2 {% if not filters.category and not filters.status %}d-none{% endif %}">
-                <div class="col-md-3">
-                    <label for="category" class="form-label">Categoría</label>
+    <!-- Sección de filtros avanzada (colapsable) -->
+    <div id="advancedFilters" class="mb-4 {% if not filters.category and not filters.status %}d-none{% endif %}">
+        <div class="card p-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label for="category" class="form-label">Categoría:</label>
                     <select name="category" id="category" class="form-select">
-                        <option value="">-- Todas --</option>
+                        <option value="">Todas las categorías</option>
                         {% for category in categories %}
-                            <option value="{{ category.id }}" {% if filters.category|stringformat:"s" == category.id|stringformat:"s" %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
+                        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == filters.category %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
-
-                <div class="col-md-3">
-                    <label for="status" class="form-label">Estado de Stock</label>
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Estado de Stock:</label>
                     <select name="status" id="status" class="form-select">
-                        <option value="">-- Todos --</option>
-                        <option value="in_stock" {% if filters.status == 'in_stock' %}selected{% endif %}>Con Stock</option>
+                        <option value="">Todos los estados</option>
+                        <option value="in_stock" {% if filters.status == 'in_stock' %}selected{% endif %}>En Stock</option>
                         <option value="out_of_stock" {% if filters.status == 'out_of_stock' %}selected{% endif %}>Sin Stock</option>
                     </select>
                 </div>
-
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Aplicar Filtros</button>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary me-2" type="submit">Aplicar filtros</button>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Limpiar</a>
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <a href="{% url 'products:product_list' %}" class="btn btn-danger w-100">Limpiar Filtros</a>
-                </div>
-            </div>
-        </div>
-    </form>
-    
-    <!-- Pestañas para productos activos y papelera -->
-    <ul class="nav nav-tabs mb-3" id="productTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active-products" type="button" role="tab">
-                Productos Disponibles
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="inactive-tab" data-bs-toggle="tab" data-bs-target="#inactive-products" type="button" role="tab">
-                Papelera
-            </button>
-        </li>
-    </ul>
-
-    <div class="tab-content" id="productTabsContent">
-        <!-- Pestaña de Productos Disponibles -->
-        <div class="tab-pane fade show active" id="active-products" role="tabpanel" aria-labelledby="active-tab">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Código</th>
-                            <th>Nombre</th>
-                            <th>Categoría</th>
-                            <th>Cantidad</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for product in active_products %}
-                        <tr class="{% if not product.has_stock %}table-danger{% endif %}">
-                            <td>{{ product.code }}</td>
-                            <td>{{ product.name }}</td>
-                            <td>{{ product.category|default:'Sin Categoría' }}</td>
-                            <td>{{ product.quantity }}</td>
-                            <td>
-                                <span class="badge {% if product.has_stock %}bg-success{% else %}bg-danger{% endif %}">
-                                    {{ product.status }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{% url 'products:product_edit' product.id %}" class="btn btn-sm btn-primary" title="Editar">
-                                    <i class="fa-solid fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProductModal{{ product.id }}" title="Eliminar">
-                                    <i class="fa-solid fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- Modal de Eliminación (para productos activos) -->
-                        <div class="modal fade" id="deleteProductModal{{ product.id }}" tabindex="-1" aria-labelledby="deleteProductModalLabel{{ product.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteProductModalLabel{{ product.id }}">Eliminar Producto</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        ¿Estás seguro de enviar a la papelera el producto <strong>{{ product.name }}</strong>?
-                                        <br><small class="text-muted">Podrás restaurarlo más tarde desde la Papelera.</small>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <a href="{% url 'products:product_delete' product.id %}" class="btn btn-danger">Enviar a Papelera</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6" class="text-center">No hay productos disponibles.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Pestaña de Papelera -->
-        <div class="tab-pane fade" id="inactive-products" role="tabpanel" aria-labelledby="inactive-tab">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Código</th>
-                            <th>Nombre</th>
-                            <th>Fecha Eliminación</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for product in inactive_products %}
-                        <tr>
-                            <td>{{ product.code }}</td>
-                            <td>{{ product.name }}</td>
-                            <td>{{ product.deleted_at|date:"d/m/Y H:i" }}</td>
-                            <td>
-                                <a href="{% url 'products:product_restore' product.id %}" class="btn btn-sm btn-success" title="Restaurar">
-                                    <i class="fa-solid fa-undo"></i>
-                                </a>
-                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deletePermanentModal{{ product.id }}" title="Eliminar Permanentemente">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- Modal de Eliminación Permanente (para productos inactivos) -->
-                        <div class="modal fade" id="deletePermanentModal{{ product.id }}" tabindex="-1" aria-labelledby="deletePermanentModalLabel{{ product.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deletePermanentModalLabel{{ product.id }}">Eliminar Permanentemente</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        ¿Estás seguro de eliminar el producto <strong>{{ product.name }}</strong> de forma permanente?
-                                        <br><small class="text-danger">Esta acción no se puede revertir.</small>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <a href="{% url 'products:product_delete_permanently' product.id %}" class="btn btn-danger">Eliminar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center">No hay productos en la papelera.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
-</div>
+    
+    <!-- Tabla de productos disponibles -->
+    <div class="table-responsive mt-3">
+        <table class="table table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.code|default:"N/A" }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category.name }}</td>
+                    <td>${{ product.price|floatformat:2 }}</td>
+                    <td>
+                        <span class="badge {% if product.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'products:product_edit' product.id %}" class="btn btn-sm btn-primary" title="Editar">
+                            <i class="fa-solid fa-edit"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ product.id }}" title="Eliminar (a papelera)">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                        <!-- Modal para confirmar eliminación -->
+                        <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Eliminar Producto</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Estás seguro de mover el producto <strong>{{ product.name }}</strong> a la papelera?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <a href="{% url 'products:product_delete' product.id %}" class="btn btn-danger">Confirmar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay productos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-<script>
-    // Script para manejar el colapso de los filtros avanzados
-    document.getElementById('btnFilterToggle').addEventListener('click', function() {
-        const filtersDiv = document.getElementById('advancedFilters');
-        if (filtersDiv.classList.contains('d-none')) {
-            filtersDiv.classList.remove('d-none');
-            this.innerHTML = '<i class="fa-solid fa-filter-slash"></i>';
-            this.title = 'Ocultar filtros';
-        } else {
-            filtersDiv.classList.add('d-none');
-            this.innerHTML = '<i class="fa-solid fa-filter"></i>';
-            this.title = 'Mostrar/Ocultar filtros';
-        }
-    });
-</script>
-{% endblock %}
+    <script>
+        document.getElementById('btnFilterToggle').addEventListener('click', function() {
+            const filtersDiv = document.getElementById('advancedFilters');
+            filtersDiv.classList.toggle('d-none');
+            this.title = filtersDiv.classList.contains('d-none') ? 'Mostrar filtros' : 'Ocultar filtros';
+        });
+    </script>
+{% endblock product_content %}

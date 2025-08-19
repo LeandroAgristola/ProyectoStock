@@ -5,12 +5,13 @@ from django.contrib import messages
 from .models import Product, Category
 from .forms import ProductForm, CategoryForm
 
+
 @login_required
 def product_list(request):
     """
-    Vista que lista productos con filtros.
+    Vista que lista productos activos con filtros.
     - Filtra por categoría, estado de stock y búsqueda por nombre/código.
-    - Separa productos activos (disponibles) e inactivos (en papelera).
+    - Renderiza el template de productos disponibles.
     """
     # Obtener parámetros de filtrado
     category_filter = request.GET.get('category')
@@ -19,9 +20,6 @@ def product_list(request):
 
     # QuerySet base para todos los productos disponibles
     products = Product.objects.filter(available=True)
-
-    # QuerySet para los productos en papelera
-    inactive_products = Product.objects.filter(available=False)
 
     # Aplicar filtros de búsqueda
     if search_query:
@@ -36,24 +34,34 @@ def product_list(request):
     if status_filter == 'in_stock':
         products = products.filter(stock__gt=0)
     elif status_filter == 'out_of_stock':
-        products = products.filter(stock=0)
-
-    # Obtener todas las categorías para el filtro del sidebar
-    categories = Category.objects.all()
+        products = products.filter(stock__exact=0)
     
-    # Preparar el contexto para la plantilla
     context = {
-        'active_products': products,  # Usar el nombre de variable correcto
-        'inactive_products': inactive_products, # Usar el nombre de variable correcto
-        'categories': categories,
+        'products': products,
+        'categories': Category.objects.all(),
         'filters': {
             'category': category_filter,
             'status': status_filter,
             'search': search_query,
-        }
+        },
+        'active_tab': 'available', # Indica qué pestaña está activa
     }
-
     return render(request, 'products/product_list.html', context)
+
+
+@login_required
+def product_trash(request):
+    """
+    Vista que muestra los productos en la papelera (no disponibles).
+    """
+    inactive_products = Product.objects.filter(available=False)
+    
+    context = {
+        'inactive_products': inactive_products,
+        'active_tab': 'trash', # Indica qué pestaña está activa
+    }
+    return render(request, 'products/product_trash.html', context)
+
 
 @login_required
 def product_create(request):
@@ -68,10 +76,11 @@ def product_create(request):
             return redirect('products:product_list')
     else:
         form = ProductForm()
-    
+
     context = {
         'form': form,
-        'title': 'Nuevo Producto'
+        'title': 'Nuevo Producto',
+        'active_tab': 'create', # Indica qué pestaña está activa
     }
     return render(request, 'products/product_form.html', context)
 
@@ -93,7 +102,8 @@ def product_edit(request, pk):
     
     context = {
         'form': form,
-        'title': 'Editar Producto'
+        'title': 'Editar Producto',
+        'active_tab': 'available', # La pestaña activa al editar es 'Disponibles'
     }
     return render(request, 'products/product_form.html', context)
 
@@ -101,24 +111,16 @@ def product_edit(request, pk):
 @login_required
 def product_delete(request, pk):
     """
-    Vista para 'eliminar' un producto (enviar a la papelera).
+    Vista para mover un producto a la papelera (lo marca como no disponible).
     """
     product = get_object_or_404(Product, pk=pk)
-    product.delete()  # Llama al método sobrescrito en el modelo
-    messages.success(request, f"Producto '{product.name}' enviado a la papelera.")
-    return redirect('products:product_list')
-
-
-@login_required
-def product_restore(request, pk):
-    """
-    Vista para restaurar un producto de la papelera.
-    """
-    product = get_object_or_404(Product, pk=pk, active=False)
-    product.active = True
-    product.deleted_at = None
+    if request.method == 'POST':
+        # La lógica de eliminación está en la vista. Se mantiene POST para mayor seguridad.
+        pass # La lógica se manejará con el enlace del template
+    
+    product.available = False
     product.save()
-    messages.success(request, f"Producto '{product.name}' restaurado exitosamente.")
+    messages.success(request, "Producto movido a la papelera.")
     return redirect('products:product_list')
 
 
@@ -127,20 +129,34 @@ def product_delete_permanently(request, pk):
     """
     Vista para eliminar un producto de forma permanente.
     """
-    product = get_object_or_404(Product, pk=pk, active=False)
-    product_name = product.name
-    product.delete(hard=True) # Eliminación definitiva, sin pasar por la sobrescritura del delete()
-    messages.success(request, f"Producto '{product_name}' eliminado permanentemente.")
-    return redirect('products:product_list')
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    messages.success(request, "Producto eliminado permanentemente.")
+    return redirect('products:product_trash')
+
+
+@login_required
+def product_restore(request, pk):
+    """
+    Vista para restaurar un producto de la papelera.
+    """
+    product = get_object_or_404(Product, pk=pk)
+    product.available = True
+    product.save()
+    messages.success(request, "Producto restaurado exitosamente.")
+    return redirect('products:product_trash')
 
 
 @login_required
 def category_list(request):
     """
-    Vista para listar, editar y eliminar categorías.
+    Vista que lista las categorías.
     """
-    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
-    context = {'categories': categories}
+    categories = Category.objects.all()
+    context = {
+        'categories': categories,
+        'active_tab': 'categories', # Indica qué pestaña está activa
+    }
     return render(request, 'products/category_list.html', context)
 
 
@@ -160,7 +176,8 @@ def category_create(request):
     
     context = {
         'form': form,
-        'title': 'Nueva Categoría'
+        'title': 'Nueva Categoría',
+        'active_tab': 'categories', # La pestaña activa al crear es 'Categorías'
     }
     return render(request, 'products/category_form.html', context)
 
@@ -182,7 +199,8 @@ def category_edit(request, pk):
     
     context = {
         'form': form,
-        'title': 'Editar Categoría'
+        'title': 'Editar Categoría',
+        'active_tab': 'categories', # La pestaña activa al editar es 'Categorías'
     }
     return render(request, 'products/category_form.html', context)
 
@@ -193,12 +211,6 @@ def category_delete(request, pk):
     Vista para eliminar una categoría.
     """
     category = get_object_or_404(Category, pk=pk)
-    category_name = category.name
-
-    # Al eliminar una categoría, los productos asociados a ella se quedan sin categoría
-    # debido a la propiedad on_delete=models.SET_NULL en el modelo Product.
-    # Al eliminar una categoría padre, las subcategorías se convierten en categorías de nivel superior
-    # debido a la propiedad on_delete=models.SET_NULL en el modelo Category.
     category.delete()
-    messages.success(request, f"Categoría '{category_name}' eliminada exitosamente.")
+    messages.success(request, f"Categoría eliminada exitosamente.")
     return redirect('products:category_list')

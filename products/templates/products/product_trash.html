@@ -1,0 +1,59 @@
+{% extends "products/products_layout.html" %}
+{% load static %}
+
+{% block product_content %}
+    <div class="table-responsive mt-3">
+        <table class="table table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Fecha de baja</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in inactive_products %}
+                <tr>
+                    <td>{{ product.code|default:"N/A" }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category.name }}</td>
+                    <td>{{ product.updated|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'products:product_restore' product.id %}" class="btn btn-sm btn-success" title="Restaurar">
+                            <i class="fa-solid fa-recycle"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deletePermanentModal{{ product.id }}" title="Eliminar permanentemente">
+                            <i class="fa-solid fa-trash-can-xmark"></i>
+                        </button>
+                        <!-- Modal para confirmar eliminación permanente -->
+                        <div class="modal fade" id="deletePermanentModal{{ product.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Eliminar Producto Permanentemente</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Estás seguro de eliminar el producto <strong>{{ product.name }}</strong> permanentemente?<br>
+                                        <small class="text-danger">Esta acción no se puede deshacer.</small>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <a href="{% url 'products:product_delete_permanently' product.id %}" class="btn btn-danger">Eliminar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No hay productos en la papelera.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock product_content %}

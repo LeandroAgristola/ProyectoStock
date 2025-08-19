@@ -18,22 +18,14 @@ class ProductForm(forms.ModelForm):
             'available': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+
 class CategoryForm(forms.ModelForm):
     """
     Formulario para crear/editar categorías de productos.
     """
     class Meta:
         model = Category
-        fields = ['name', 'parent']
+        fields = ['name']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'parent': forms.Select(attrs={'class': 'form-control'}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Excluir la categoría actual del queryset para evitar recursión infinita
-        if self.instance.pk:
-            self.fields['parent'].queryset = Category.objects.exclude(pk=self.instance.pk)
-        else:
-            self.fields['parent'].queryset = Category.objects.all()

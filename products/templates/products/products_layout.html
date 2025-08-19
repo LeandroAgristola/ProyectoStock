@@ -1,0 +1,36 @@
+{% extends "management/layout_management.html" %}
+
+{% block content %}
+<div class="container-fluid" id="product_section">
+    <h2 class="mb-4">Productos</h2>
+
+    <ul class="nav nav-tabs" id="productTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'available' %}active{% endif %}" href="{% url 'products:product_list' %}" role="tab">
+                Disponibles
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'create' %}active{% endif %}" href="{% url 'products:product_create' %}" role="tab">
+                <i class="fa-solid fa-plus"></i> Producto
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'categories' %}active{% endif %}" href="{% url 'products:category_list' %}" role="tab">
+                <i class="fa-solid fa-folder-open"></i> Categorías
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'trash' %}active{% endif %}" href="{% url 'products:product_trash' %}" role="tab">
+                <i class="fa-solid fa-trash"></i> Papelera
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        {% block product_content %}
+        <!-- Aquí se renderizará el contenido de la sub-página -->
+        {% endblock product_content %}
+    </div>
+</div>
+{% endblock %}
