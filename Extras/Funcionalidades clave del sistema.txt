@@ -1,0 +1,51 @@
+Funcionalidades clave del sistema
+
+Gestión de Stock
+
+    Listado completo de productos con código, nombre, descripción y cantidad.
+    Búsqueda rápida por nombre o código.
+    Filtros para ordenar por cantidad, nombre, etc.
+    Stock se actualiza automáticamente al cargar una venta.
+
+Creación de combos: 
+
+    Crear combos con distintos productos
+    Visualización de cantidades disponibles para crear combos
+    Al realizar la venta se agregara el combo como un producto 
+    Las cantidades de productos asignados a combos se “reservan”
+    Al editar un cantidad de un combo, los productos se devuelven al Stock
+
+Seguimiento de Ventas
+
+    Historial de todas las ventas realizadas.
+    Detalles: producto, cantidad, precio total, fecha.
+    Datos del cliente asociado a cada venta.
+    Estado de envío: “Entregado en local” o “En reparto”.
+    Filtros por fecha, cliente o estado de entrega.
+
+Seguimiento de Envíos: 
+
+    Listados de choferes disponibles para envíos
+    Listado de envíos en base a las ventas realizadas
+    Seguimiento de envíos pendientes y entregados
+    Asignación de choferes a cada envío pendiente
+    Exportación de listado en formato PDF de envíos por cada chofer
+
+Gestión de Clientes
+
+Base de datos con información de contacto de todos los clientes.
+Acceso al historial de compras por cliente.
+Visualización del estado de entrega por cliente.
+
+Carga de Nueva Venta
+
+    Formulario fácil y rápido para registrar ventas.
+    Búsqueda por nombre o código del producto.
+    Autocompletado de datos si el cliente ya existe.
+    Al confirmar una venta:
+
+        Se descuenta del stock automáticamente.
+        Se registra en el historial de ventas.
+        Se actualiza la base de datos de clientes.
+
+

@@ -1,0 +1,61 @@
+{% extends "management/layout_management.html" %}
+
+{% block content %}
+<div class="container my-4" id="formsProductos">
+  <h2 class="mb-4">{{ title }}</h2>
+
+  <form method="post" novalidate id="formProducto">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <div>{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Campos del formulario -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        {{ form.code.label_tag }}
+        {{ form.code }}
+        {% if form.code.errors %}<div class="text-danger small">{{ form.code.errors }}</div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+        {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.category.label_tag }}
+            <div class="input-group">
+                {{ form.category }}
+                <a href="{% url 'products:category_create' %}" class="btn btn-outline-secondary" title="Crear nueva categoría">
+                    <i class="fa-solid fa-plus"></i>
+                </a>
+            </div>
+            {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+            {{ form.quantity.label_tag }}
+            {{ form.quantity }}
+            {% if form.quantity.errors %}<div class="text-danger small">{{ form.quantity.errors }}</div>{% endif %}
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+        {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button type="submit" class="btn btn-success">Guardar</button>
+      <a href="{% url 'products:product_list' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

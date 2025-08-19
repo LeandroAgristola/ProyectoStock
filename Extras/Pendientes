@@ -1,0 +1,86 @@
+1. Definición de las Aplicaciones
+
+products: Se encargaría de la Gestión de Stock. Aquí irían los modelos para productos, y las vistas para listar, buscar, filtrar y crear productos, así como la lógica para la creación de combos.
+
+clients: Manejaría la Gestión de Clientes. Se encargaría del modelo de clientes, y las vistas para listar, crear, editar y ver el historial de compras de cada cliente.
+
+sales: Esta sería la app central para el Seguimiento de Ventas y la Carga de Nueva Venta. Se encargaría de las vistas y modelos para registrar ventas, y manejaría la lógica de descuento de stock y actualización de datos del cliente.
+
+shipping: Estaría a cargo del Seguimiento de Envíos. Aquí irían los modelos para choferes y envíos, y las vistas para asignar, seguir y exportar listados.
+
+2. Ruta de Trabajo por Fases y Asignación de Tareas
+Para que puedan trabajar de manera eficiente, lo mejor es empezar con las aplicaciones que son menos dependientes y luego avanzar a las que conectan todo.
+
+Fase 1: Fundamentos (Se puede trabajar en paralelo) 
+
+    Tarea A: Desarrollo de la aplicación products (Asignar a 1 persona)
+
+    Modelos: Definir el modelo Product con sus campos (name, code, description, quantity).
+
+    CRUD de Productos: Crear las vistas (views.py) y las URLs (urls.py) para crear, leer, actualizar y eliminar (CRUD) productos individuales.
+
+    Modelos de Combos: Definir el modelo Combo y el modelo intermedio para los productos que lo componen (ComboProduct).
+
+    Vistas de Combos: Crear las vistas para crear y editar combos, incluyendo la lógica para reservar stock y devolverlo al editar.
+
+    Búsqueda y Filtros: Implementar la lógica de búsqueda y filtrado en la vista de listado de productos.
+
+    Tarea B: Desarrollo de la aplicación clients (Asignar a la otra persona)
+
+    Modelos: Definir el modelo Client con sus campos (name, email, phone, etc.).
+
+    CRUD de Clientes: Crear las vistas y URLs para el CRUD de clientes.
+
+    Historial de Compras: Preparar la vista para mostrar el historial de compras de un cliente (aún no se implementará la lógica completa, solo el esqueleto).
+
+Fase 2: Conexión y Lógica de Negocio (Trabajo colaborativo) 
+
+    Una vez que los modelos y vistas básicos de products y clients estén listos, pueden empezar con las aplicaciones que los conectan.
+
+    Tarea A: Desarrollo de la aplicación sales (Ambos pueden trabajar aquí)
+
+    Modelos:
+
+    Modelo Sale con campos para la fecha, el precio total, el cliente (ForeignKey a Client).
+
+    Modelo SaleItem para los detalles de la venta (ForeignKey a Sale y a Product). Aquí es clave manejar tanto productos individuales como combos.
+
+    Vista de Carga de Nueva Venta:
+
+    Crear el formulario para seleccionar productos (del stock) o combos.
+
+    Implementar la lógica de autocompletado para el cliente.
+
+    Al confirmar la venta, implementar la lógica para:
+
+    Descontar stock de products.
+
+    Crear la entrada en sales y saleitem.
+
+    Crear o asociar el cliente en clients.
+
+    Historial de Ventas: Crear la vista de listado de ventas con sus filtros.
+
+Tarea B: Desarrollo de la aplicación shipping (Ambos pueden trabajar aquí)
+
+    Modelos:
+
+    Modelo Driver para los choferes.
+
+    Modelo Shipping con campos para la fecha, el estado (en local, en reparto), el chofer (ForeignKey a Driver) y la venta asociada (OneToOneField a Sale).
+
+    Vistas:
+
+    Crear la vista de listado de envíos.
+
+    Implementar la lógica para asignar un chofer a un envío pendiente.
+
+    Desarrollar la vista para exportar a PDF los envíos por chofer.
+
+3. Consideraciones Técnicas y de Diseño
+
+    API Interna: Si en algún momento necesitan que una app se comunique con otra de forma más compleja (por ejemplo, para obtener el stock de un producto para la vista de ventas), pueden crear una vista de API REST en la app de products que devuelva datos en formato JSON.
+
+    Estructura de Carpetas: Asegúrense de que cada app tenga su propia carpeta de templates (app_name/templates/app_name/), y lo mismo para los archivos estáticos (app_name/static/app_name/).
+
+    Control de Versiones: ¡Es fundamental que usen Git! Con un repositorio en GitHub o GitLab, cada uno puede trabajar en su propia rama (feat/products-crud, feat/clients-model) y luego fusionar los cambios a la rama principal (main o develop) una vez que las funcionalidades estén completas. Esto evitará sobrescribir el trabajo del otro.
