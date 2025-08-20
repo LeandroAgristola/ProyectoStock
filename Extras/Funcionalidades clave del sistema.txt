@@ -51,8 +51,6 @@ Carga de Nueva Venta
 
 Cambios: 
 
-  
-
     En ventas, agregar los graficos y otra pestaña con el listado de de ventas, 
     En el listado se ventas tiene q estar el boton de nueva venta
 

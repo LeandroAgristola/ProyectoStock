@@ -15,23 +15,23 @@ Fase 1: Fundamentos (Se puede trabajar en paralelo)
 
     Tarea A: Desarrollo de la aplicación products (Asignar a 1 persona)
 
-    Modelos: Definir el modelo Product con sus campos (name, code, description, quantity).
+        Modelos: Definir el modelo Product con sus campos (name, code, description, quantity).
 
-    CRUD de Productos: Crear las vistas (views.py) y las URLs (urls.py) para crear, leer, actualizar y eliminar (CRUD) productos individuales.
+        CRUD de Productos: Crear las vistas (views.py) y las URLs (urls.py) para crear, leer, actualizar y eliminar (CRUD) productos individuales.
 
-    Modelos de Combos: Definir el modelo Combo y el modelo intermedio para los productos que lo componen (ComboProduct).
+        Modelos de Combos: Definir el modelo Combo y el modelo intermedio para los productos que lo componen (ComboProduct).
 
-    Vistas de Combos: Crear las vistas para crear y editar combos, incluyendo la lógica para reservar stock y devolverlo al editar.
+        Vistas de Combos: Crear las vistas para crear y editar combos, incluyendo la lógica para reservar stock y devolverlo al editar.
 
-    Búsqueda y Filtros: Implementar la lógica de búsqueda y filtrado en la vista de listado de productos.
+        Búsqueda y Filtros: Implementar la lógica de búsqueda y filtrado en la vista de listado de productos.
 
     Tarea B: Desarrollo de la aplicación clients (Asignar a la otra persona)
 
-    Modelos: Definir el modelo Client con sus campos (name, email, phone, etc.).
+        Modelos: Definir el modelo Client con sus campos (name, email, phone, etc.).
 
-    CRUD de Clientes: Crear las vistas y URLs para el CRUD de clientes.
+        CRUD de Clientes: Crear las vistas y URLs para el CRUD de clientes.
 
-    Historial de Compras: Preparar la vista para mostrar el historial de compras de un cliente (aún no se implementará la lógica completa, solo el esqueleto).
+        Historial de Compras: Preparar la vista para mostrar el historial de compras de un cliente (aún no se implementará la lógica completa, solo el esqueleto).
 
 Fase 2: Conexión y Lógica de Negocio (Trabajo colaborativo) 
 

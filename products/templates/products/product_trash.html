@@ -23,12 +23,12 @@
                     <td>
                         <form method="post" action="{% url 'products:product_restore' product.id %}" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-success" title="Restaurar">
-                            <i class="fa-solid fa-recycle"></i>
+                        <button type="submit" class="btn btn-sm btn-outline-success" title="Restaurar">
+                            Restaurar
                         </button>
                         </form>
                         <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deletePermanentModal{{ product.id }}" title="Eliminar permanentemente">
-                            <i class="fa-solid fa-trash-can-xmark"></i>
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                         <!-- Modal para confirmar eliminación permanente -->
                         <div class="modal fade" id="deletePermanentModal{{ product.id }}" tabindex="-1">
