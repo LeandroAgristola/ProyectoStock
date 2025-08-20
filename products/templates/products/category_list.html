@@ -4,96 +4,112 @@
 {% block product_content %}
 <div class="container-fluid" id="category_list_container">
 
-    <a href="{% url 'products:category_create' %}" class="btn btn-success mb-3">
-        <i class="fa-solid fa-plus"></i> Nueva Categoría
-    </a>
+  <a href="{% url 'products:category_create' %}" class="btn btn-success mb-3">
+    <i class="fa-solid fa-plus"></i> Nueva Categoría
+  </a>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped">
-            <thead class="table-light">
-                <tr>
-                    <th>Categoría</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for category in categories %}
-                    {% if not category.parent %}
-                    <tr class="table-primary">
-                        <td>
-                            <span class="fw-bold">{{ category.name }}</span>
-                        </td>
-                        <td>{{ category.description|default:"N/A" }}</td>
-                        <td>
-                            <a href="{% url 'products:category_edit' category.id %}" class="btn btn-sm btn-primary" title="Editar">
-                                <i class="fa-solid fa-edit"></i>
-                            </a>
-                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ category.id }}" title="Eliminar">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                            <!-- Modal para confirmar eliminación -->
-                            <div class="modal fade" id="deleteModal{{ category.id }}" tabindex="-1">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Eliminar Categoría</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            ¿Estás seguro de eliminar la categoría <strong>{{ category.name }}</strong>?<br>
-                                            <small class="text-danger">Esto dejará a los productos asociados sin categoría.</small>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <a href="{% url 'products:category_delete' category.id %}" class="btn btn-danger">Eliminar</a>
-                                        </div>
-                                    </div>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th style="width:20%">Categoría</th>
+                <th style="width:20%" class="text-center">Subcategorías</th>
+                <th style="width:20%">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            {% if not category.parent %}
+            <!-- Fila de categoría padre -->
+            <tr class="bg-light fw-semibold">
+                <td>
+                    <button class="btn btn-link p-0 text-decoration-none"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#subs{{ category.id }}"
+                            aria-expanded="false"
+                            aria-controls="subs{{ category.id }}">
+                    <i class="fa-solid fa-chevron-right me-2 collapse-indicator" style="transition:transform .15s;"></i>
+                    <span class="fw-bold">{{ category.name }}</span>
+                    </button>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-secondary">{{ category.children.count }}</span>
+                </td>
+                <td>
+                    <a href="{% url 'products:category_edit' category.id %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                        Editar
+                    </a>
+                    <button type="button"
+                            class="btn btn-sm btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#delCat{{ category.id }}"
+                            title="Eliminar">
+                    <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade" id="delCat{{ category.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Eliminar Categoría</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                            <div class="modal-body">
+                                ¿Estás seguro de eliminar <strong>{{ category.name }}</strong>?<br>
+                                <small class="text-danger">Los productos asociados quedarán sin categoría.</small>
+                            </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <form method="post" action="{% url 'products:category_delete' category.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                        {% for subcategory in category.children.all %}
-                        <tr>
-                            <td>
-                                &nbsp; &nbsp; &nbsp; &nbsp; &ndash; {{ subcategory.name }}
-                            </td>
-                            <td>{{ subcategory.description|default:"N/A" }}</td>
-                            <td>
-                                <a href="{% url 'products:category_edit' subcategory.id %}" class="btn btn-sm btn-primary" title="Editar">
-                                    <i class="fa-solid fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ subcategory.id }}" title="Eliminar">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                                <!-- Modal para confirmar eliminación -->
-                                <div class="modal fade" id="deleteModal{{ subcategory.id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Eliminar Subcategoría</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                ¿Estás seguro de eliminar la subcategoría <strong>{{ subcategory.name }}</strong>?<br>
-                                                <small class="text-danger">Esto dejará a los productos asociados sin categoría.</small>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <a href="{% url 'products:category_delete' subcategory.id %}" class="btn btn-danger">Eliminar</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+                <!-- Subcategorías (colapsable) -->
+            <tr class="collapse bg-light" id="subs{{ category.id }}">
+                <td colspan="3">
+                    {% if category.children.all %}
+                    <ul class="list-group list-group-flush ps-4">
+                        {% for sub in category.children.all %}
+                        <li class="list-group-item py-1 border-0 bg-transparent">
+                            <i class="fa-solid fa-angle-right text-muted me-2"></i> {{ sub.name }}
+                        </li>
                         {% endfor %}
+                    </ul>
+                    {% else %}
+                    <em class="text-muted">Sin subcategorías</em>
                     {% endif %}
-                {% empty %}
-                    <tr><td colspan="3" class="text-center">No hay categorías registradas.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </td>
+            </tr>
+            {% endif %}
+            {% empty %}
+                <tr><td colspan="3" class="text-center">No hay categorías registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Rotación del chevron al expandir/colapsar
+  document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(btn => {
+    const targetSel = btn.getAttribute('data-bs-target');
+    const icon = btn.querySelector('.collapse-indicator');
+    const target = document.querySelector(targetSel);
+    if (!target || !icon) return;
+
+    target.addEventListener('show.bs.collapse', () => { icon.style.transform = 'rotate(90deg)'; });
+    target.addEventListener('hide.bs.collapse', () => { icon.style.transform = 'rotate(0)'; });
+  });
+});
+</script>
 {% endblock product_content %}

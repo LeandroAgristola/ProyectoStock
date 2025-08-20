@@ -11,7 +11,7 @@ class Category(models.Model):
     # Relación recursiva para subcategorías
     parent = models.ForeignKey(
         'self',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name='children',
@@ -42,9 +42,9 @@ class Product(models.Model):
     description = models.TextField(blank=True, verbose_name="Descripción")
     category = models.ForeignKey(
         Category,
-        on_delete=models.CASCADE,
-        related_name='products',
-        verbose_name="Categoría"
+        on_delete=models.SET_NULL,   # productos sobreviven sin categoría
+        null=True, blank=True,
+        related_name="products"
     )
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio")
     stock = models.IntegerField(verbose_name="Stock")

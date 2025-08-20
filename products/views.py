@@ -4,49 +4,38 @@ from django.db.models import Q
 from django.contrib import messages
 from .models import Product, Category
 from .forms import ProductForm, CategoryForm
+from django.http import JsonResponse
 
 
 @login_required
 def product_list(request):
-    """
-    Vista que lista productos activos con filtros.
-    - Filtra por categoría, estado de stock y búsqueda por nombre/código.
-    - Renderiza el template de productos disponibles.
-    """
-    # Obtener parámetros de filtrado
     category_filter = request.GET.get('category')
     status_filter = request.GET.get('status')
-    search_query = request.GET.get('search')
+    search_query = request.GET.get('search') or ''  # <- evita "None"
 
-    # QuerySet base para todos los productos disponibles
     products = Product.objects.filter(available=True)
-
-    # Aplicar filtros de búsqueda
     if search_query:
-        products = products.filter(
-            Q(name__icontains=search_query) | Q(code__icontains=search_query)
-        )
-
+        products = products.filter(Q(name__icontains=search_query) | Q(code__icontains=search_query))
     if category_filter:
         products = products.filter(category_id=category_filter)
-
-    # Aplicar filtro de stock
     if status_filter == 'in_stock':
         products = products.filter(stock__gt=0)
     elif status_filter == 'out_of_stock':
         products = products.filter(stock__exact=0)
-    
+
     context = {
         'products': products,
         'categories': Category.objects.all(),
-        'filters': {
-            'category': category_filter,
-            'status': status_filter,
-            'search': search_query,
-        },
-        'active_tab': 'available', # Indica qué pestaña está activa
+        'filters': {'category': category_filter, 'status': status_filter, 'search': search_query},
+        'active_tab': 'available',
     }
     return render(request, 'products/product_list.html', context)
+
+@login_required
+def subcategories_api(request):
+    parent_id = request.GET.get('parent')
+    qs = Category.objects.filter(parent_id=parent_id).values('id', 'name') if parent_id else []
+    return JsonResponse({'results': list(qs)})
 
 
 @login_required
@@ -71,7 +60,9 @@ def product_create(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.available = True
+            product.save()
             messages.success(request, "Producto creado exitosamente.")
             return redirect('products:product_list')
     else:
@@ -94,7 +85,10 @@ def product_edit(request, pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            if not product.available:
+                product.available = True
+            product.save()
             messages.success(request, "Producto actualizado exitosamente.")
             return redirect('products:product_list')
     else:
@@ -110,40 +104,34 @@ def product_edit(request, pk):
 
 @login_required
 def product_delete(request, pk):
-    """
-    Vista para mover un producto a la papelera (lo marca como no disponible).
-    """
     product = get_object_or_404(Product, pk=pk)
-    if request.method == 'POST':
-        # La lógica de eliminación está en la vista. Se mantiene POST para mayor seguridad.
-        pass # La lógica se manejará con el enlace del template
-    
+    if request.method != 'POST':
+        messages.error(request, "Acción inválida.")
+        return redirect('products:product_list')
     product.available = False
     product.save()
     messages.success(request, "Producto movido a la papelera.")
     return redirect('products:product_list')
 
-
-@login_required
-def product_delete_permanently(request, pk):
-    """
-    Vista para eliminar un producto de forma permanente.
-    """
-    product = get_object_or_404(Product, pk=pk)
-    product.delete()
-    messages.success(request, "Producto eliminado permanentemente.")
-    return redirect('products:product_trash')
-
-
 @login_required
 def product_restore(request, pk):
-    """
-    Vista para restaurar un producto de la papelera.
-    """
+    if request.method != 'POST':
+        messages.error(request, "Acción inválida.")
+        return redirect('products:product_trash')
     product = get_object_or_404(Product, pk=pk)
     product.available = True
     product.save()
     messages.success(request, "Producto restaurado exitosamente.")
+    return redirect('products:product_trash')
+
+@login_required
+def product_delete_permanently(request, pk):
+    if request.method != 'POST':
+        messages.error(request, "Acción inválida.")
+        return redirect('products:product_trash')
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    messages.success(request, "Producto eliminado permanentemente.")
     return redirect('products:product_trash')
 
 
@@ -162,55 +150,48 @@ def category_list(request):
 
 @login_required
 def category_create(request):
-    """
-    Vista para crear una nueva categoría.
-    """
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Categoría creada exitosamente.")
+            category = form.save()
+            # Subcategorías nuevas
+            for name in request.POST.getlist('subcategories'):
+                if name.strip():
+                    Category.objects.create(name=name.strip(), parent=category)
+            messages.success(request, "Categoría creada con éxito.")
             return redirect('products:category_list')
     else:
         form = CategoryForm()
-    
-    context = {
-        'form': form,
-        'title': 'Nueva Categoría',
-        'active_tab': 'categories', # La pestaña activa al crear es 'Categorías'
-    }
-    return render(request, 'products/category_form.html', context)
+    return render(request, 'products/category_form.html', {'form': form, 'title': 'Nueva Categoría'})
 
 
 @login_required
 def category_edit(request, pk):
-    """
-    Vista para editar una categoría existente.
-    """
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
-            messages.success(request, "Categoría actualizada exitosamente.")
+            # nuevas subcategorías
+            for name in request.POST.getlist('subcategories'):
+                if name.strip():
+                    Category.objects.create(name=name.strip(), parent=category)
+            # eliminar subcategorías
+            ids_remove = request.POST.getlist('remove_children')
+            if ids_remove:
+                Category.objects.filter(id__in=ids_remove, parent=category).delete()
+            messages.success(request, "Categoría actualizada.")
             return redirect('products:category_list')
     else:
         form = CategoryForm(instance=category)
-    
-    context = {
-        'form': form,
-        'title': 'Editar Categoría',
-        'active_tab': 'categories', # La pestaña activa al editar es 'Categorías'
-    }
-    return render(request, 'products/category_form.html', context)
-
+    return render(request, 'products/category_form.html', {'form': form, 'title': 'Editar Categoría'})
 
 @login_required
 def category_delete(request, pk):
-    """
-    Vista para eliminar una categoría.
-    """
     category = get_object_or_404(Category, pk=pk)
+    if request.method != 'POST':
+        messages.error(request, "Acción inválida.")
+        return redirect('products:category_list')
     category.delete()
-    messages.success(request, f"Categoría eliminada exitosamente.")
+    messages.success(request, "Categoría eliminada exitosamente.")
     return redirect('products:category_list')

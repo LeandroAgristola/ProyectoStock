@@ -21,9 +21,12 @@
                     <td>{{ product.category.name }}</td>
                     <td>{{ product.updated|date:"d/m/Y" }}</td>
                     <td>
-                        <a href="{% url 'products:product_restore' product.id %}" class="btn btn-sm btn-success" title="Restaurar">
+                        <form method="post" action="{% url 'products:product_restore' product.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success" title="Restaurar">
                             <i class="fa-solid fa-recycle"></i>
-                        </a>
+                        </button>
+                        </form>
                         <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deletePermanentModal{{ product.id }}" title="Eliminar permanentemente">
                             <i class="fa-solid fa-trash-can-xmark"></i>
                         </button>
@@ -41,7 +44,10 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <a href="{% url 'products:product_delete_permanently' product.id %}" class="btn btn-danger">Eliminar</a>
+                                        <form method="post" action="{% url 'products:product_delete_permanently' product.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

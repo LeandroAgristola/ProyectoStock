@@ -29,29 +29,34 @@
       </div>
     </div>
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            {{ form.category.label_tag }}
-            <div class="input-group">
-                {{ form.category }}
-            </div>
-            {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
-        </div>
-        <div class="col-md-6">
-            {{ form.price.label_tag }}
-            {{ form.price }}
-            {% if form.price.errors %}<div class="text-danger small">{{ form.price.errors }}</div>{% endif %}
-        </div>
-    </div>
-    
+    <!-- Nuevo: Categoría padre + Subcategoría -->
     <div class="row mb-3">
       <div class="col-md-6">
-          {{ form.stock.label_tag }}
-          {{ form.stock }}
-          {% if form.stock.errors %}<div class="text-danger small">{{ form.stock.errors }}</div>{% endif %}
+        {{ form.parent_category.label_tag }}
+        {{ form.parent_category }}
+      </div>
+      <div class="col-md-6">
+        {{ form.category.label_tag }}
+        <div class="input-group">
+          {{ form.category }}
+        </div>
+        {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
       </div>
     </div>
-    
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        {{ form.price.label_tag }}
+        {{ form.price }}
+        {% if form.price.errors %}<div class="text-danger small">{{ form.price.errors }}</div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        {{ form.stock.label_tag }}
+        {{ form.stock }}
+        {% if form.stock.errors %}<div class="text-danger small">{{ form.stock.errors }}</div>{% endif %}
+      </div>
+    </div>
+
     <div class="mb-3">
         {{ form.description.label_tag }}
         {{ form.description }}
@@ -64,4 +69,32 @@
     </div>
   </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const parentSel = document.getElementById('id_parent_category');
+  const subSel = document.getElementById('id_category');
+
+  function loadSubs(parentId) {
+    subSel.innerHTML = '<option value="">Cargando...</option>';
+    fetch("{% url 'products:subcategories_api' %}?parent=" + parentId, {
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+      .then(r => r.json())
+      .then(({results}) => {
+        subSel.innerHTML = '<option value="">-- Elegí subcategoría --</option>';
+        results.forEach(({id, name}) => {
+          const o = document.createElement('option');
+          o.value = id; o.textContent = name;
+          subSel.appendChild(o);
+        });
+      });
+  }
+
+  parentSel.addEventListener('change', e => {
+    if (e.target.value) loadSubs(e.target.value);
+    else subSel.innerHTML = '<option value="">-- Primero elegí una categoría --</option>';
+  });
+});
+</script>
 {% endblock product_content %}

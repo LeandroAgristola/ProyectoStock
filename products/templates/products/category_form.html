@@ -15,23 +15,36 @@
       </div>
     {% endif %}
 
+    <!-- Nombre de la categoría -->
     <div class="mb-3">
         {{ form.name.label_tag }}
         {{ form.name }}
         {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
-        <small class="form-text text-muted">Ingresa el nombre de la categoría principal.</small>
+        <small class="form-text text-muted">Ingresa el nombre de la categoría.</small>
     </div>
 
-    <div id="subcategories-section" style="display: none;">
-      <h5 class="mt-4">Subcategorías</h5>
-      <p class="form-text text-muted">Agrega subcategorías (opcional).</p>
-      <div id="subcategories-container">
-        <!-- Los campos de subcategoría se agregarán aquí dinámicamente -->
-      </div>
-      <button type="button" id="addSubcategoryBtn" class="btn btn-outline-primary btn-sm mt-2">
-        <i class="fa-solid fa-plus"></i> Agregar Subcategoría
-      </button>
-    </div>
+    <!-- Subcategorías actuales (al editar) -->
+    {% if form.instance.pk and form.instance.children.all %}
+      <h5 class="mt-4">Subcategorías actuales</h5>
+      <ul class="list-group mb-3">
+        {% for child in form.instance.children.all %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ child.name }}</span>
+            <div class="form-check m-0">
+              <input class="form-check-input" type="checkbox" name="remove_children" value="{{ child.id }}" id="rm{{ child.id }}">
+              <label class="form-check-label" for="rm{{ child.id }}">Eliminar</label>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <!-- Subcategorías nuevas -->
+    <h5 class="mt-4">Agregar Subcategorías</h5>
+    <div id="subcategories-container"></div>
+    <button type="button" id="addSubcategoryBtn" class="btn btn-outline-primary btn-sm mt-2">
+      <i class="fa-solid fa-plus"></i> Agregar Subcategoría
+    </button>
 
     <div class="d-flex justify-content-between mt-4">
       <button type="submit" class="btn btn-success">Guardar</button>
@@ -42,12 +55,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const categoryNameInput = document.getElementById('id_name');
-  const subcategoriesSection = document.getElementById('subcategories-section');
   const subcategoriesContainer = document.getElementById('subcategories-container');
   const addSubcategoryBtn = document.getElementById('addSubcategoryBtn');
 
-  // Función para agregar un nuevo campo de subcategoría
   function addSubcategoryField() {
     const newSubcategoryField = document.createElement('div');
     newSubcategoryField.className = 'input-group mb-2';
@@ -60,29 +70,13 @@ document.addEventListener('DOMContentLoaded', function() {
     subcategoriesContainer.appendChild(newSubcategoryField);
   }
 
-  // Evento para el botón de agregar subcategoría
   addSubcategoryBtn.addEventListener('click', function() {
     addSubcategoryField();
   });
 
-  // Evento para remover campos de subcategoría
   subcategoriesContainer.addEventListener('click', function(event) {
-    if (event.target.classList.contains('remove-subcategory-btn')) {
+    if (event.target.closest('.remove-subcategory-btn')) {
       event.target.closest('.input-group').remove();
-    }
-  });
-
-  // Mostrar la sección de subcategorías si ya hay un nombre
-  if (categoryNameInput.value.length > 0) {
-    subcategoriesSection.style.display = 'block';
-  }
-
-  // Escuchar el evento de input en el campo de categoría
-  categoryNameInput.addEventListener('input', function() {
-    if (this.value.length > 0) {
-      subcategoriesSection.style.display = 'block';
-    } else {
-      subcategoriesSection.style.display = 'none';
     }
   });
 });
