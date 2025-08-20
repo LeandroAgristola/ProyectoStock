@@ -8,6 +8,9 @@
         <!-- Campo de búsqueda -->
         <div class="col-md-6 position-relative">
             <div class="input-group">
+                <a href="{% url 'products:product_create' %}" class="btn btn-success ">
+                <i class="fa-solid fa-plus"></i> Nuevo Producto
+                </a>
                 <input type="text" name="search" id="search"
                         value="{{ filters.search|default_if_none:'' }}"|
                         class="form-control" placeholder="Buscar producto...">

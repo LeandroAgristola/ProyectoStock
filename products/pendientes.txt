@@ -11,9 +11,8 @@ La barra de busqueda ocupa todo el ancho de la pantalla
 Ajustar si el producto es menor al 20% que el numero aparesca con el estilo warning
     <span class="badge {% if product.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">
         {{ product.stock }}
-    </span>
-Si el producto es igual a 0 = sin stock
-
+    </span> 
+    
 Categorias
 
 Acomodar estilos del formulario
