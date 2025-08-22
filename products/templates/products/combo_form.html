@@ -1,0 +1,85 @@
+{% extends "products/products_layout.html" %}
+{% load static %}
+
+{% block product_content %}
+<div class="container my-4" id="formsCombos">
+  <h2 class="mb-4">{{ title }}</h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <!-- Combo principal -->
+    <div class="mb-3">
+      {{ form.name.label_tag }}
+      {{ form.name }}
+    </div>
+    <div class="mb-3">
+      {{ form.description.label_tag }}
+      {{ form.description }}
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+        {{ form.special_price.label_tag }}
+        {{ form.special_price }}
+        <div class="form-text">
+            Dejar vacío para calcularlo automáticamente a partir de los productos.
+        </div>
+        {% if form.special_price.errors %}
+            <div class="text-danger small">{{ form.special_price.errors }}</div>
+        {% endif %}
+        </div>
+      <div class="col-md-6">
+        <div class="form-check mt-4">
+          {{ form.available }} {{ form.available.label_tag }}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+    <h5>Productos del Combo</h5>
+    {{ formset.management_form }}
+
+    <div id="combo-items">
+      {% for f in formset %}
+      <div class="row mb-2 border rounded p-2">
+        <div class="col-md-8">
+          {{ f.product.label_tag }} {{ f.product }}
+        </div>
+        <div class="col-md-3">
+          {{ f.quantity.label_tag }} {{ f.quantity }}
+        </div>
+        <div class="col-md-1 d-flex align-items-center">
+          {% if f.instance.pk %}
+            <label class="form-check-label">{{ f.DELETE }} Eliminar</label>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <button type="button" class="btn btn-outline-secondary my-2" id="add-item">
+      + Agregar Producto
+    </button>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button type="submit" class="btn btn-success">Guardar Combo</button>
+      <a href="{% url 'products:combo_list' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const addBtn = document.getElementById('add-item');
+  const itemsDiv = document.getElementById('combo-items');
+  let totalForms = document.getElementById('id_items-TOTAL_FORMS');
+
+  addBtn.addEventListener('click', () => {
+    const currentCount = parseInt(totalForms.value);
+    const newFormHtml = itemsDiv.children[0].outerHTML.replace(/items-\d+/g, `items-${currentCount}`);
+    itemsDiv.insertAdjacentHTML('beforeend', newFormHtml);
+    totalForms.value = currentCount + 1;
+  });
+});
+</script>
+{% endblock %}

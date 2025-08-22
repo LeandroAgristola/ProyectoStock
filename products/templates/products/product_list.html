@@ -71,7 +71,7 @@
             </thead>
             <tbody>
                 {% for product in products %}
-                <tr>
+                <tr class="{% if product.stock == 0 %} resaltado-rojo {% endif %}">
                     <td>{{ product.code|default:"N/A" }}</td>
                     <td>{{ product.name }}</td>
                     <td>{{ product.category.name }}</td>

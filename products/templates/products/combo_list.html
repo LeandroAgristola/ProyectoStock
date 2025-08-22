@@ -1,0 +1,91 @@
+{% extends "products/products_layout.html" %}
+{% load static %}
+
+{% block product_content %}
+<div class="container-fluid">
+
+  <a href="{% url 'products:combo_create' %}" class="btn btn-success mb-3">
+    <i class="fa-solid fa-plus"></i> Nuevo Combo
+  </a>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock disponible</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for combo in combos %}
+            <tr>
+                <td>
+                    <button class="btn btn-link p-0 text-decoration-none"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#items{{ combo.id }}"
+                            aria-expanded="false">
+                        <i class="fa-solid fa-chevron-right me-2 collapse-indicator"></i>
+                        {{ combo.name }}
+                    </button>
+                </td>
+                <td>${{ combo.calculated_price }}</td>
+                <td>
+                  {% if combo.max_available_stock > 0 %}
+                    <span class="badge bg-success">{{ combo.max_available_stock }}</span>
+                  {% else %}
+                    <span class="badge bg-danger">0</span>
+                  {% endif %}
+                </td>
+                <td>
+                    {% if combo.available %}
+                        <span class="badge bg-primary">Disponible</span>
+                    {% else %}
+                        <span class="badge bg-secondary">No disponible</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'products:combo_edit' combo.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                    <form action="{% url 'products:combo_delete' combo.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            <!-- Fila expandible con los items -->
+            <tr class="collapse" id="items{{ combo.id }}">
+                <td colspan="5">
+                    <ul class="list-group list-group-flush">
+                        {% for item in combo.items.all %}
+                        <li class="list-group-item {% if item.product.stock == 0 %}resaltado-rojo{% endif %}">
+                            <div class="d-flex justify-content-between">
+                                <div class="row">
+                                    <div class="col-10">
+                                    <span>{{ item.quantity }} x {{ item.product.name }}</span>
+                                    </div>
+                                    <div class="col-2"|>
+                                    {% if item.product.stock == 0 %}
+                                    <span class="badge bg-danger">Sin stock</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Stock: {{ item.product.stock }}</span>
+                                    </div>
+                                </div>   
+                            {% endif %}
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">Sin productos en este combo</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% empty %}
+                <tr><td colspan="5" class="text-center">No hay combos creados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -11,6 +11,11 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'combos' %}active{% endif %}" href="{% url 'products:combo_list' %}" role="tab">
+               Combos
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link {% if active_tab == 'categories' %}active{% endif %}" href="{% url 'products:category_list' %}" role="tab">
                Categorías
             </a>

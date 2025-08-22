@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
-from .models import Product, Category
-from .forms import ProductForm, CategoryForm
+from .models import Product, Category, Combo, ComboItem
+from .forms import ComboItemFormSet, ProductForm, CategoryForm, ComboForm, ComboItemForm
 from django.http import JsonResponse
-
 
 @login_required
 def product_list(request):
@@ -13,6 +12,7 @@ def product_list(request):
     status_filter = request.GET.get('status')
     search_query = request.GET.get('search') or ''  # <- evita "None"
 
+    # Filtrado de productos y busqueda
     products = Product.objects.filter(available=True)
     if search_query:
         products = products.filter(Q(name__icontains=search_query) | Q(code__icontains=search_query))
@@ -30,6 +30,8 @@ def product_list(request):
         'active_tab': 'available',
     }
     return render(request, 'products/product_list.html', context)
+
+# API para mostrar las subcategorías asociadas a una categoría en el formulario 
 
 @login_required
 def subcategories_api(request):
@@ -51,6 +53,7 @@ def product_trash(request):
     }
     return render(request, 'products/product_trash.html', context)
 
+# CRUD productos
 
 @login_required
 def product_create(request):
@@ -135,6 +138,7 @@ def product_delete_permanently(request, pk):
     return redirect('products:product_trash')
 
 
+
 @login_required
 def category_list(request):
     """
@@ -147,6 +151,7 @@ def category_list(request):
     }
     return render(request, 'products/category_list.html', context)
 
+# CRUD Categorías
 
 @login_required
 def category_create(request):
@@ -195,3 +200,57 @@ def category_delete(request, pk):
     category.delete()
     messages.success(request, "Categoría eliminada exitosamente.")
     return redirect('products:category_list')
+
+
+
+@login_required
+def combo_list(request):
+    combos = Combo.objects.all()
+    context = {
+        'combos': combos,
+        'active_tab': 'combos',
+    }
+    return render(request, 'products/combo_list.html', context)
+
+#CRUD Combos
+
+@login_required
+def combo_create(request):
+    if request.method == 'POST':
+        form = ComboForm(request.POST)
+        formset = ComboItemFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            combo = form.save()
+            formset.instance = combo
+            formset.save()
+            messages.success(request, "Combo creado exitosamente.")
+            return redirect('products:combo_list')
+    else:
+        form = ComboForm()
+        formset = ComboItemFormSet()
+    return render(request, 'products/combo_form.html', {'form': form, 'formset': formset, 'title': 'Nuevo Combo'})
+
+@login_required
+def combo_edit(request, pk):
+    combo = get_object_or_404(Combo, pk=pk)
+    if request.method == 'POST':
+        form = ComboForm(request.POST, instance=combo)
+        formset = ComboItemFormSet(request.POST, instance=combo)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            messages.success(request, "Combo actualizado exitosamente.")
+            return redirect('products:combo_list')
+    else:
+        form = ComboForm(instance=combo)
+        formset = ComboItemFormSet(instance=combo)
+    return render(request, 'products/combo_form.html', {'form': form, 'formset': formset, 'title': 'Editar Combo'})
+
+
+@login_required
+def combo_delete(request, pk):
+    combo = get_object_or_404(Combo, pk=pk)
+    if request.method == 'POST':
+        combo.delete()
+        messages.success(request, "Combo eliminado.")
+    return redirect('products:combo_list')

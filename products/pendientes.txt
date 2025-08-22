@@ -1,21 +1,12 @@
 Errores: 
 
-Formulario de productos
-    Cuando editamos no se muestra el listado de cateogrias correctamente
-    El formulario muestra el input de categoria pero con el nombre "category" y no subcategoria
 
-
-Listad de productos: 
-los campos de fltro no se muestran debajo de la barra de busqueda
-La barra de busqueda ocupa todo el ancho de la pantalla
-Ajustar si el producto es menor al 20% que el numero aparesca con el estilo warning
-    <span class="badge {% if product.stock > 0 %}bg-success{% else %}bg-danger{% endif %}">
-        {{ product.stock }}
-    </span> 
-    
-Categorias
-
-Acomodar estilos del formulario
-los botones de confirma y aceptar deben estar mas pegados en el medio del formulario
 
 Funcionalidad completa de creacion de combos
+
+Ajustar orden del nombre y stock de los item del stock
+Si el stock por cantidades individuales es 0 la disponibilidad debe estar como "no disponible"
+agregar modal de advertencia al eliminar un combo
+
+
+Ajustar estilos generales

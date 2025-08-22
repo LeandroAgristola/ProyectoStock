@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+#Modelos para categorias 
+
 class Category(models.Model):
     """
     Modelo para categorías de productos.
@@ -31,6 +33,8 @@ class Category(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+#Modelos para productos
+
 class Product(models.Model):
     """
     Modelo para productos.
@@ -42,9 +46,10 @@ class Product(models.Model):
     description = models.TextField(blank=True, verbose_name="Descripción")
     category = models.ForeignKey(
         Category,
-        on_delete=models.SET_NULL,   # productos sobreviven sin categoría
+        on_delete=models.SET_NULL,
         null=True, blank=True,
-        related_name="products"
+        related_name="products",
+        verbose_name="Subcategoría"
     )
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio")
     stock = models.IntegerField(verbose_name="Stock")
@@ -59,3 +64,40 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+#Modelos para combos    
+
+class Combo(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    special_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def calculated_price(self):
+        """Si no tiene precio especial, devolver suma de productos"""
+        total = sum(item.product.price * item.quantity for item in self.items.all())
+        return self.special_price if self.special_price else total
+
+    def max_available_stock(self):
+        """La cantidad máxima de combos disponibles depende del stock mínimo de sus productos"""
+        stocks = []
+        for item in self.items.all():
+            if item.product.stock is None:
+                continue
+            if item.product.stock == 0:
+                return 0
+            stocks.append(item.product.stock // item.quantity)
+        return min(stocks) if stocks else 0
+
+
+class ComboItem(models.Model):
+    combo = models.ForeignKey(Combo, related_name="items", on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"

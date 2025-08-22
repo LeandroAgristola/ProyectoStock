@@ -22,4 +22,10 @@ urlpatterns = [
 
     # API subcategorías
     path('api/subcategories/', views.subcategories_api, name='subcategories_api'),
+
+    # Combos
+    path('combos/', views.combo_list, name='combo_list'),
+    path('combos/new/', views.combo_create, name='combo_create'),
+    path('combos/<int:pk>/edit/', views.combo_edit, name='combo_edit'),
+    path('combos/<int:pk>/delete/', views.combo_delete, name='combo_delete'),
 ]
