@@ -9,71 +9,96 @@
   </a>
 
   <div class="table-responsive">
-    <table class="table table-hover align-middle">
+    <table class="table table-hover table-striped align-middle">
         <thead class="table-light">
             <tr>
                 <th>Nombre</th>
-                <th>Precio</th>
-                <th>Stock disponible</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th class="text-center">Precio</th>
+                <th class="text-center">Stock disponible</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for combo in combos %}
-            <tr>
+            <tr class="{% if combo.max_available_stock == 0 %} resaltado-rojo {% endif %} bg-light fw-semibold">
                 <td>
                     <button class="btn btn-link p-0 text-decoration-none"
                             type="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#items{{ combo.id }}"
-                            aria-expanded="false">
-                        <i class="fa-solid fa-chevron-right me-2 collapse-indicator"></i>
-                        {{ combo.name }}
+                            aria-expanded="false"
+                            aria-controls="items{{ combo.id }}">
+                    <i class="fa-solid fa-chevron-right me-2 collapse-indicator" style="transition:transform .15s;"></i>
+                    <span class="fw-bold">{{ combo.name }}</span>
                     </button>
                 </td>
-                <td>${{ combo.calculated_price }}</td>
-                <td>
+                <td class="text-center">${{ combo.calculated_price }}</td>
+                <td class="text-center">
                   {% if combo.max_available_stock > 0 %}
-                    <span class="badge bg-success">{{ combo.max_available_stock }}</span>
+                    <span class="badge bg-success ">{{ combo.max_available_stock }}</span>
                   {% else %}
                     <span class="badge bg-danger">0</span>
                   {% endif %}
                 </td>
-                <td>
-                    {% if combo.available %}
-                        <span class="badge bg-primary">Disponible</span>
+                <td class="text-center">
+                    {% if combo.is_available %}
+                        <span class="badge bg-success">Disponible</span>
                     {% else %}
                         <span class="badge bg-secondary">No disponible</span>
                     {% endif %}
                 </td>
-                <td>
-                    <a href="{% url 'products:combo_edit' combo.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
-                    <form action="{% url 'products:combo_delete' combo.id %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
+                <td class="text-center">
+                    <a href="{% url 'products:combo_edit' combo.id %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                        Editar
+                    </a>
+                    <button type="button"
+                            class="btn btn-sm btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#delCombo{{ combo.id }}"
+                            title="Eliminar">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    
+                    <!-- Modal de advertencia -->
+                    <div class="modal fade" id="delCombo{{ combo.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Eliminar Combo</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro de eliminar el combo <strong>{{ combo.name }}</strong>?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <form method="post" action="{% url 'products:combo_delete' combo.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <!-- Fila expandible con los items -->
-            <tr class="collapse" id="items{{ combo.id }}">
+            <tr class="collapse bg-light" id="items{{ combo.id }}">
                 <td colspan="5">
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush ps-4">
                         {% for item in combo.items.all %}
-                        <li class="list-group-item {% if item.product.stock == 0 %}resaltado-rojo{% endif %}">
-                            <div class="d-flex justify-content-between">
+                        <li class="list-group-item py-1 border-0 bg-transparent {% if item.product.stock == 0 %}resaltado-rojo{% endif %}">
+                            <div class="d-flex">
                                 <div class="row">
-                                    <div class="col-10">
-                                    <span>{{ item.quantity }} x {{ item.product.name }}</span>
-                                    </div>
-                                    <div class="col-2"|>
+                                    <div class="col-8">{{ item.quantity }} x {{ item.product.name }}</div>
                                     {% if item.product.stock == 0 %}
-                                    <span class="badge bg-danger">Sin stock</span>
+                                        <div class="col-4"><span class="badge bg-danger">Sin stock</span></div>
                                     {% else %}
-                                    <span class="badge bg-secondary">Stock: {{ item.product.stock }}</span>
-                                    </div>
-                                </div>   
-                            {% endif %}
+                                        <div class="col-4"><span class="badge bg-secondary">Stock: {{ item.product.stock }}</span></div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </li>
                         {% empty %}
                         <li class="list-group-item text-muted">Sin productos en este combo</li>
@@ -81,6 +106,7 @@
                     </ul>
                 </td>
             </tr>
+
             {% empty %}
                 <tr><td colspan="5" class="text-center">No hay combos creados.</td></tr>
             {% endfor %}
@@ -88,4 +114,18 @@
     </table>
   </div>
 </div>
-{% endblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Rotación del chevron al expandir/colapsar
+  document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(btn => {
+    const targetSel = btn.getAttribute('data-bs-target');
+    const icon = btn.querySelector('.collapse-indicator');
+    const target = document.querySelector(targetSel);
+    if (!target || !icon) return;
+
+    target.addEventListener('show.bs.collapse', () => { icon.style.transform = 'rotate(90deg)'; });
+    target.addEventListener('hide.bs.collapse', () => { icon.style.transform = 'rotate(0)'; });
+  });
+});
+</script>
+{% endblock product_content %}

@@ -92,6 +92,11 @@ class Combo(models.Model):
                 return 0
             stocks.append(item.product.stock // item.quantity)
         return min(stocks) if stocks else 0
+    
+    @property
+    def is_available(self):
+        """Disponible solo si tiene stock suficiente y está marcado como disponible."""
+        return self.available and self.max_available_stock() > 0
 
 
 class ComboItem(models.Model):
