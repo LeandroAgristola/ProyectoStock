@@ -3,10 +3,7 @@ Errores:
 
 
 Funcionalidad completa de creacion de combos
-
-Ajustar orden del nombre y stock de los item del stock
-Si el stock por cantidades individuales es 0 la disponibilidad debe estar como "no disponible"
-agregar modal de advertencia al eliminar un combo
+    error al editar un combo
 
 
 Ajustar estilos generales

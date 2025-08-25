@@ -39,23 +39,26 @@
     <h5>Productos del Combo</h5>
     {{ formset.management_form }}
 
-    <div id="combo-items">
-      {% for f in formset %}
-      <div class="row mb-2 border rounded p-2">
-        <div class="col-md-8">
-          {{ f.product.label_tag }} {{ f.product }}
-        </div>
-        <div class="col-md-3">
-          {{ f.quantity.label_tag }} {{ f.quantity }}
-        </div>
-        <div class="col-md-1 d-flex align-items-center">
-          {% if f.instance.pk %}
-            <label class="form-check-label">{{ f.DELETE }} Eliminar</label>
-          {% endif %}
-        </div>
+  <div id="combo-items">
+    {% for f in formset %}
+    <div class="row mb-2 border rounded p-2">
+      {{ f.id }}  <!-- 👈 Campo oculto necesario para que Django sepa si es edición o nuevo -->
+      <div class="col-md-8">
+        {{ f.product.label_tag }} {{ f.product }}
+        {% if f.product.errors %}<div class="text-danger small">{{ f.product.errors }}</div>{% endif %}
       </div>
-      {% endfor %}
+      <div class="col-md-3">
+        {{ f.quantity.label_tag }} {{ f.quantity }}
+        {% if f.quantity.errors %}<div class="text-danger small">{{ f.quantity.errors }}</div>{% endif %}
+      </div>
+      <div class="col-md-1 d-flex align-items-center">
+        {% if f.instance.pk %}
+          <label class="form-check-label">{{ f.DELETE }} Eliminar</label>
+        {% endif %}
+      </div>
     </div>
+    {% endfor %}
+  </div>
 
     <button type="button" class="btn btn-outline-secondary my-2" id="add-item">
       + Agregar Producto

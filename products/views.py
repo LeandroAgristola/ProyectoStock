@@ -235,16 +235,31 @@ def combo_edit(request, pk):
     combo = get_object_or_404(Combo, pk=pk)
     if request.method == 'POST':
         form = ComboForm(request.POST, instance=combo)
-        formset = ComboItemFormSet(request.POST, instance=combo)
+        formset = ComboItemFormSet(request.POST, instance=combo, prefix="items")
+        
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
             messages.success(request, "Combo actualizado exitosamente.")
             return redirect('products:combo_list')
+        else:
+            # Debug: mostrar en consola por qué no se guarda
+            print("Form errors:", form.errors)
+            print("Formset errors:", formset.errors)
+            print("Non-form errors:", formset.non_form_errors())
     else:
         form = ComboForm(instance=combo)
-        formset = ComboItemFormSet(instance=combo)
-    return render(request, 'products/combo_form.html', {'form': form, 'formset': formset, 'title': 'Editar Combo'})
+        formset = ComboItemFormSet(instance=combo, prefix="items")
+    
+    return render(
+        request,
+        'products/combo_form.html',
+        {
+            'form': form,
+            'formset': formset,
+            'title': 'Editar Combo'
+        }
+    )
 
 
 @login_required
