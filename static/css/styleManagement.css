@@ -105,7 +105,7 @@ label {
 /*Estilo para login*/
 
 #development-form {
-    background-color: #cccccc;
+    background-color: #f8f9fa;
     width: 350px;
     max-height: 450px;
     width: 400px;
@@ -127,7 +127,7 @@ label {
     font-weight: 500;
     width: 50%;
     background-color: #586875;
-    color: #cccccc;
+    color: #f8f9fa;
     border: none;
     padding: 10px 20px;
     border-radius: 20px;
@@ -241,4 +241,74 @@ canvas {
     padding: 5px 10px;
     border-radius: 8px;
     font-weight: 500;
+}
+
+
+/* Estilo para Productos*/
+
+/* Estado activo */
+#productTab .nav-link.active {
+    color: #586875 !important;   /* gris claro */
+    font-weight: 500;
+}
+
+/* Estado inactivo */
+#productTab .nav-link {
+    color: #000 !important;      /* negro */
+}
+
+
+/* === Botones desplegables (categorías y combos) === */
+#category_list_container .btn-link,
+#combo_list_container .btn-link {
+    color: #000 !important;               /* negro */
+    text-decoration: none !important;     /* sin subrayado */
+}
+
+/* Hover */
+#category_list_container .btn-link:hover,
+#combo_list_container .btn-link:hover {
+    color: #586875 !important;            /* gris */
+    text-decoration: none !important;
+}
+
+/* Activo (cuando el collapse está abierto) */
+#category_list_container .btn-link[aria-expanded="true"],
+#combo_list_container .btn-link[aria-expanded="true"] {
+    color: #586875 !important;            /* gris claro */
+    font-weight: 500;
+}
+
+/* === Sublistas (subcategorías e items de combo) === */
+#category_list_container .list-group-item,
+#combo_list_container .list-group-item {
+    color: #000 !important;               
+    background-color: transparent;        
+    border: 0 !important;
+}
+
+/* Hover en sublistas */
+#category_list_container .list-group-item:hover,
+#combo_list_container .list-group-item:hover {
+    color: #586875 !important;            
+    background-color: #f8f9fa;            
+}
+
+/* Activo (si algún item lo marcás con .active en el futuro) */
+#category_list_container .list-group-item.active,
+#combo_list_container .list-group-item.active {
+    color: #586875 !important;
+    font-weight: 500;
+    background-color: transparent !important;
+}
+
+#formsCategorias,
+#formsProductos,
+#formsCombos {
+    background-color: #f8f9fa;
+    width: 900px;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }

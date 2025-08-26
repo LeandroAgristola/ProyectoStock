@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block product_content %}
-<div class="container-fluid">
+<div id="combo_list_container">
 
   <a href="{% url 'products:combo_create' %}" class="btn btn-success mb-3">
     <i class="fa-solid fa-plus"></i> Nuevo Combo
@@ -21,8 +21,8 @@
         </thead>
         <tbody>
             {% for combo in combos %}
-            <tr class="{% if combo.max_available_stock == 0 %} resaltado-rojo {% endif %} bg-light fw-semibold">
-                <td>
+            <tr class="{% if combo.max_available_stock == 0 %} resaltado-rojo {% endif %}">
+                <td >
                     <button class="btn btn-link p-0 text-decoration-none"
                             type="button"
                             data-bs-toggle="collapse"
@@ -89,15 +89,14 @@
                     <ul class="list-group list-group-flush ps-4">
                         {% for item in combo.items.all %}
                         <li class="list-group-item py-1 border-0 bg-transparent {% if item.product.stock == 0 %}resaltado-rojo{% endif %}">
-                            <div class="d-flex">
-                                <div class="row">
-                                    <div class="col-8">{{ item.quantity }} x {{ item.product.name }}</div>
+                            <div class="row d-flex">
+                                    <div class="col-2">{{ item.quantity }} x {{ item.product.name }}</div>
                                     {% if item.product.stock == 0 %}
-                                        <div class="col-4"><span class="badge bg-danger">Sin stock</span></div>
+                                        <div class="col-2"><span class="badge bg-danger">Sin stock</span></div>
                                     {% else %}
-                                        <div class="col-4"><span class="badge bg-secondary">Stock: {{ item.product.stock }}</span></div>
+                                        <div class="col-2"><span class="badge bg-secondary">Stock: {{ item.product.stock }}</span></div>
                                     {% endif %}
-                                </div>
+                                    <div class="col-8"></div>
                             </div>
                         </li>
                         {% empty %}

@@ -1,9 +1,6 @@
 Errores: 
 
-
-
-Funcionalidad completa de creacion de combos
-    error al editar un combo
-
+Cuando elimino un producto que esta dentro de un combo, sigue estando disponible en el combo
+Deberia aparecer como sin stock o eliminado
 
 Ajustar estilos generales
