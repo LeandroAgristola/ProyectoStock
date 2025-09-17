@@ -7,6 +7,7 @@ class BaseStaff(models.Model):
     """
     nombre = models.CharField(max_length=50)
     apellido = models.CharField(max_length=50)
+    dni = models.CharField(max_length=15, unique=True, verbose_name="DNI") 
     email = models.EmailField(unique=True)
     direccion = models.CharField(max_length=100)
     telefono = models.CharField(max_length=20)

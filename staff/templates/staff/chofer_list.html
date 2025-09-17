@@ -2,16 +2,18 @@
 
 {% block staff_content %}
 <div class="container-fluid" id="listastaff">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Lista de <strong>Choferes</strong></h3>
-        <a href="{% url 'staff:chofer_create' %}" class="btn btn-success">Nuevo chofer</a>
+    
+    <div class="d-flex align-items-center mb-3">
+    <h3 class="mb-0">Lista de <strong>Choferes</strong></h3>
+    <a href="{% url 'staff:chofer_create' %}" class="btn btn-success ms-3">Nuevo Chofer</a>
     </div>
+
 
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>Nombre y Apellido</th>
-                <th>Email</th>
+                <th>DNI</th> <th>Email</th>
                 <th>Celular</th>
                 <th>Ingreso</th>
                 <th>Acciones</th>
@@ -21,7 +23,7 @@
             {% for chofer in choferes_activos %}
             <tr>
                 <td>{{ chofer.nombre }} {{ chofer.apellido }}</td>
-                <td>{{ chofer.email }}</td>
+                <td>{{ chofer.dni }}</td> <td>{{ chofer.email }}</td>
                 <td>{{ chofer.telefono }}</td>
                 <td>{{ chofer.fecha_alta|date:"d/m/Y" }}</td>
                 <td>
@@ -32,7 +34,7 @@
             </tr>
             {% include 'staff/modals/desactivar_modal.html' with staff=chofer tipo='chofer' %}
             {% empty %}
-            <tr><td colspan="5">No hay choferes activos.</td></tr>
+            <tr><td colspan="6">No hay choferes activos.</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -43,7 +45,7 @@
         <thead>
             <tr>
                 <th>Nombre y Apellido</th>
-                <th>Email</th>
+                <th>DNI</th> <th>Email</th>
                 <th>Celular</th>
                 <th>Fecha de Baja</th>
                 <th>Acciones</th>
@@ -53,7 +55,7 @@
             {% for chofer in choferes_inactivos %}
             <tr>
                 <td>{{ chofer.nombre }} {{ chofer.apellido }}</td>
-                <td>{{ chofer.email }}</td>
+                <td>{{ chofer.dni }}</td> <td>{{ chofer.email }}</td>
                 <td>{{ chofer.telefono }}</td>
                 <td>{{ chofer.fecha_baja|date:"d/m/Y" }}</td>
                 <td>
@@ -64,7 +66,7 @@
             {% include 'staff/modals/reactivar_modal.html' with staff=chofer tipo='chofer' %}
             {% include 'staff/modals/eliminar_modal.html' with staff=chofer tipo='chofer' %}
             {% empty %}
-            <tr><td colspan="5">No hay choferes inactivos.</td></tr>
+            <tr><td colspan="6">No hay choferes inactivos.</td></tr>
             {% endfor %}
         </tbody>
     </table>

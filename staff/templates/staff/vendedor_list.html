@@ -2,16 +2,17 @@
 
 {% block staff_content %}
 <div class="container-fluid" id="listaVendedores">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    
+    <div class="d-flex aign-items-center mb-3">
         <h3 class="mb-0">Lista de <strong>Vendedores</strong></h3>
-        <a href="{% url 'staff:vendedor_create' %}" class="btn btn-success">Nuevo Vendedor</a>
+        <a href="{% url 'staff:vendedor_create' %}" class="btn btn-success ms-3">Nuevo Vendedor</a>
     </div>
 
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>Nombre y Apellido</th>
-                <th>Email</th>
+                <th>DNI</th> <th>Email</th>
                 <th>Celular</th>
                 <th>Ingreso</th>
                 <th>Acciones</th>
@@ -21,7 +22,7 @@
             {% for vendedor in vendedores_activos %}
             <tr>
                 <td>{{ vendedor.nombre }} {{ vendedor.apellido }}</td>
-                <td>{{ vendedor.email }}</td>
+                <td>{{ vendedor.dni }}</td> <td>{{ vendedor.email }}</td>
                 <td>{{ vendedor.telefono }}</td>
                 <td>{{ vendedor.fecha_alta|date:"d/m/Y" }}</td>
                 <td>
@@ -32,7 +33,7 @@
             </tr>
             {% include 'staff/modals/desactivar_modal.html' with staff=vendedor tipo='vendedor' %}
             {% empty %}
-            <tr><td colspan="5">No hay vendedores activos.</td></tr>
+            <tr><td colspan="6">No hay vendedores activos.</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -43,7 +44,7 @@
         <thead>
             <tr>
                 <th>Nombre y Apellido</th>
-                <th>Email</th>
+                <th>DNI</th> <th>Email</th>
                 <th>Celular</th>
                 <th>Fecha de Baja</th>
                 <th>Acciones</th>
@@ -53,7 +54,7 @@
             {% for vendedor in vendedores_inactivos %}
             <tr>
                 <td>{{ vendedor.nombre }} {{ vendedor.apellido }}</td>
-                <td>{{ vendedor.email }}</td>
+                <td>{{ vendedor.dni }}</td> <td>{{ vendedor.email }}</td>
                 <td>{{ vendedor.telefono }}</td>
                 <td>{{ vendedor.fecha_baja|date:"d/m/Y" }}</td>
                 <td>
@@ -64,7 +65,7 @@
             {% include 'staff/modals/reactivar_modal.html' with staff=vendedor tipo='vendedor' %}
             {% include 'staff/modals/eliminar_modal.html' with staff=vendedor tipo='vendedor' %}
             {% empty %}
-            <tr><td colspan="5">No hay vendedores inactivos.</td></tr>
+            <tr><td colspan="6">No hay vendedores inactivos.</td></tr>
             {% endfor %}
         </tbody>
     </table>
