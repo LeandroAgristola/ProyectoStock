@@ -1,0 +1,25 @@
+{% extends "management/layout_management.html" %}
+
+{% block content %}
+<div class="container-fluid" id="staff_section">
+    <h2 class="mb-4">Gestión de Personal</h2>
+
+    <ul class="nav nav-tabs" id="staffTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'vendedores' %}active{% endif %}" href="{% url 'staff:vendedor_list' %}">
+                Vendedores
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'choferes' %}active{% endif %}" href="{% url 'staff:chofer_list' %}">
+               Choferes
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        {% block staff_content %}
+        {% endblock staff_content %}
+    </div>
+</div>
+{% endblock %}

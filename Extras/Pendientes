@@ -6,7 +6,7 @@ clients: Manejaría la Gestión de Clientes. Se encargaría del modelo de client
 
 sales: Esta sería la app central para el Seguimiento de Ventas y la Carga de Nueva Venta. Se encargaría de las vistas y modelos para registrar ventas, y manejaría la lógica de descuento de stock y actualización de datos del cliente.
 
-shipping: Estaría a cargo del Seguimiento de Envíos. Aquí irían los modelos para choferes y envíos, y las vistas para asignar, seguir y exportar listados.
+shipping: Estaría a cargo del Seguimiento de Envíos. Aquí irían los modelos para envíos, y las vistas para asignar, seguir y exportar listados.
 
 2. Ruta de Trabajo por Fases y Asignación de Tareas
 Para que puedan trabajar de manera eficiente, lo mejor es empezar con las aplicaciones que son menos dependientes y luego avanzar a las que conectan todo.
@@ -64,8 +64,6 @@ Fase 2: Conexión y Lógica de Negocio (Trabajo colaborativo)
 Tarea B: Desarrollo de la aplicación shipping (Ambos pueden trabajar aquí)
 
     Modelos:
-
-    Modelo Driver para los choferes.
 
     Modelo Shipping con campos para la fecha, el estado (en local, en reparto), el chofer (ForeignKey a Driver) y la venta asociada (OneToOneField a Sale).
 

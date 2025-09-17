@@ -1,0 +1,72 @@
+{% extends "staff/staff_layout.html" %}
+
+{% block staff_content %}
+<div class="container-fluid" id="listaVendedores">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Lista de <strong>Vendedores</strong></h3>
+        <a href="{% url 'staff:vendedor_create' %}" class="btn btn-success">Nuevo Vendedor</a>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Nombre y Apellido</th>
+                <th>Email</th>
+                <th>Celular</th>
+                <th>Ingreso</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendedor in vendedores_activos %}
+            <tr>
+                <td>{{ vendedor.nombre }} {{ vendedor.apellido }}</td>
+                <td>{{ vendedor.email }}</td>
+                <td>{{ vendedor.telefono }}</td>
+                <td>{{ vendedor.fecha_alta|date:"d/m/Y" }}</td>
+                <td>
+                    <a href="{% url 'staff:vendedor_detail' vendedor.pk %}" class="btn btn-outline-info btn-sm">Detalle</a>
+                    <a href="{% url 'staff:vendedor_edit' vendedor.pk %}" class="btn btn-outline-primary btn-sm">Editar</a>
+                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalDesactivar{{ vendedor.id }}">Desactivar</button>
+                </td>
+            </tr>
+            {% include 'staff/modals/desactivar_modal.html' with staff=vendedor tipo='vendedor' %}
+            {% empty %}
+            <tr><td colspan="5">No hay vendedores activos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+    <h4 class="mt-4">Vendedores Inactivos</h4>
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Nombre y Apellido</th>
+                <th>Email</th>
+                <th>Celular</th>
+                <th>Fecha de Baja</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendedor in vendedores_inactivos %}
+            <tr>
+                <td>{{ vendedor.nombre }} {{ vendedor.apellido }}</td>
+                <td>{{ vendedor.email }}</td>
+                <td>{{ vendedor.telefono }}</td>
+                <td>{{ vendedor.fecha_baja|date:"d/m/Y" }}</td>
+                <td>
+                    <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalReactivar{{ vendedor.id }}">Reactivar</button>
+                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ vendedor.id }}">Eliminar</button>
+                </td>
+            </tr>
+            {% include 'staff/modals/reactivar_modal.html' with staff=vendedor tipo='vendedor' %}
+            {% include 'staff/modals/eliminar_modal.html' with staff=vendedor tipo='vendedor' %}
+            {% empty %}
+            <tr><td colspan="5">No hay vendedores inactivos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock staff_content %}

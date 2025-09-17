@@ -38,7 +38,7 @@
                 <a href="#" class="nav-link" id="nav-management"><i class="fa-solid fa-tag"></i>Ventas</a>
                 <a href="#" class="nav-link" id="nav-management"><i class="fa-solid fa-users"></i>Clientes</a>
                 <a href="#" class="nav-link" id="nav-management"><i class="fa-solid fa-truck"></i></i>Envios</a>
-                <a href="#" class="nav-link" id="nav-management"><i class="fa-solid fa-user-tie"></i>Choferes</a>
+                <a href="{% url 'staff:vendedor_list' %}" class="nav-link" id="nav-management"><i class="fa-solid fa-user-tie"></i>Staff</a>
                 <a href="#" class="nav-link" id="nav-management"><i class="fa-solid fa-gear"></i> Configuracion</a>
                 <a href="{% url 'management:logout' %}" class="nav-link logout" id="nav-management"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</a>
             </nav>

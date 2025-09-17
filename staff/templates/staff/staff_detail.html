@@ -1,0 +1,32 @@
+{% extends "staff/staff_layout.html" %}
+
+{% block staff_content %}
+<div class="container-fluid" id="tarjetaStaff">
+    <h2 class="text-center">Detalle de {{ tipo }}</h2>
+
+    <div class="card mt-3 p-4">
+        <p><strong>Nombre:</strong> {{ staff.nombre }} {{ staff.apellido }}</p>
+        <p><strong>Email:</strong> {{ staff.email }}</p>
+        <p><strong>Teléfono:</strong> {{ staff.telefono }}</p>
+        <p><strong>Dirección:</strong> {{ staff.direccion }}</p>
+        <p><strong>Fecha de Ingreso:</strong> {{ staff.fecha_alta|date:"d/m/Y" }}</p>
+        <p><strong>Estado:</strong> {% if staff.activo %}Activo{% else %}Inactivo (Baja: {{ staff.fecha_baja|date:"d/m/Y" }}){% endif %}</p>
+        
+        <hr>
+        <h4>Métricas (Próximamente)</h4>
+        {% if tipo == 'Vendedor' %}
+        <p>Aquí se mostrarán las estadísticas de ventas.</p>
+        {% else %}
+        <p>Aquí se mostrarán los envíos pendientes y realizados.</p>
+        {% endif %}
+        
+        <div class="text-center mt-3">
+             {% if active_tab == 'vendedores' %}
+              <a href="{% url 'staff:vendedor_list' %}" class="btn btn-secondary">Volver a la lista</a>
+              {% else %}
+              <a href="{% url 'staff:chofer_list' %}" class="btn btn-secondary">Volver a la lista</a>
+              {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

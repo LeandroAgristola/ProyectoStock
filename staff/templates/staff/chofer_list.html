@@ -1,0 +1,72 @@
+{% extends "staff/staff_layout.html" %}
+
+{% block staff_content %}
+<div class="container-fluid" id="listastaff">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Lista de <strong>Choferes</strong></h3>
+        <a href="{% url 'staff:chofer_create' %}" class="btn btn-success">Nuevo chofer</a>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Nombre y Apellido</th>
+                <th>Email</th>
+                <th>Celular</th>
+                <th>Ingreso</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chofer in choferes_activos %}
+            <tr>
+                <td>{{ chofer.nombre }} {{ chofer.apellido }}</td>
+                <td>{{ chofer.email }}</td>
+                <td>{{ chofer.telefono }}</td>
+                <td>{{ chofer.fecha_alta|date:"d/m/Y" }}</td>
+                <td>
+                    <a href="{% url 'staff:chofer_detail' chofer.pk %}" class="btn btn-outline-info btn-sm">Detalle</a>
+                    <a href="{% url 'staff:chofer_edit' chofer.pk %}" class="btn btn-outline-primary btn-sm">Editar</a>
+                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalDesactivar{{ chofer.id }}">Desactivar</button>
+                </td>
+            </tr>
+            {% include 'staff/modals/desactivar_modal.html' with staff=chofer tipo='chofer' %}
+            {% empty %}
+            <tr><td colspan="5">No hay choferes activos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+    <h4 class="mt-4">Choferes Inactivos</h4>
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Nombre y Apellido</th>
+                <th>Email</th>
+                <th>Celular</th>
+                <th>Fecha de Baja</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chofer in choferes_inactivos %}
+            <tr>
+                <td>{{ chofer.nombre }} {{ chofer.apellido }}</td>
+                <td>{{ chofer.email }}</td>
+                <td>{{ chofer.telefono }}</td>
+                <td>{{ chofer.fecha_baja|date:"d/m/Y" }}</td>
+                <td>
+                    <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalReactivar{{ chofer.id }}">Reactivar</button>
+                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ chofer.id }}">Eliminar</button>
+                </td>
+            </tr>
+            {% include 'staff/modals/reactivar_modal.html' with staff=chofer tipo='chofer' %}
+            {% include 'staff/modals/eliminar_modal.html' with staff=chofer tipo='chofer' %}
+            {% empty %}
+            <tr><td colspan="5">No hay choferes inactivos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock staff_content %}

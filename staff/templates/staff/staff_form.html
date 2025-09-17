@@ -1,0 +1,63 @@
+{% extends "staff/staff_layout.html" %}
+
+{% block staff_content %}
+<div class="container my-4" id="formsStaff">
+  <h2 class="mb-4">{{ title }}</h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
+        {{ form.nombre }}
+        {% if form.nombre.errors %}<div class="text-danger small">{{ form.nombre.errors|striptags }}</div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.apellido.id_for_label }}" class="form-label">Apellido</label>
+        {{ form.apellido }}
+        {% if form.apellido.errors %}<div class="text-danger small">{{ form.apellido.errors|striptags }}</div>{% endif %}
+      </div>
+    </div>
+    
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors|striptags }}</div>{% endif %}
+      </div>
+       <div class="col-md-6">
+        <label for="{{ form.telefono.id_for_label }}" class="form-label">Teléfono</label>
+        {{ form.telefono }}
+        {% if form.telefono.errors %}<div class="text-danger small">{{ form.telefono.errors|striptags }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+       <div class="col-md-6">
+        <label for="{{ form.direccion.id_for_label }}" class="form-label">Dirección</label>
+        {{ form.direccion }}
+        {% if form.direccion.errors %}<div class="text-danger small">{{ form.direccion.errors|striptags }}</div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.fecha_alta.id_for_label }}" class="form-label">Fecha de Alta</label>
+        {{ form.fecha_alta }}
+        {% if form.fecha_alta.errors %}<div class="text-danger small">{{ form.fecha_alta.errors|striptags }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button type="submit" class="btn btn-success">Guardar</button>
+      {% if active_tab == 'vendedores' %}
+      <a href="{% url 'staff:vendedor_list' %}" class="btn btn-secondary">Cancelar</a>
+      {% else %}
+      <a href="{% url 'staff:chofer_list' %}" class="btn btn-secondary">Cancelar</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock staff_content %}

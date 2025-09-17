@@ -1,0 +1,21 @@
+<div class="modal fade" id="modalEliminar{{ staff.id }}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Eliminar Definitivamente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                ¿Eliminar a <strong>{{ staff.nombre }} {{ staff.apellido }}</strong> permanentemente?
+                <br><small class="text-danger">Esta acción no se puede revertir.</small>
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="{% url 'staff:eliminar_staff' tipo=tipo pk=staff.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>

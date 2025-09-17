@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'management',
     'products',
+    'staff',
 ]
 
 MIDDLEWARE = [
