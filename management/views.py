@@ -23,6 +23,7 @@ def login_view(request):
             })
     return render(request, 'management/login.html')
 
+@login_required(login_url='management:login')
 def logout_view(request):
     """
     Vista del panel de administración principal.
